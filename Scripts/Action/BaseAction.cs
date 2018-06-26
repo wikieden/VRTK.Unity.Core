@@ -3,6 +3,8 @@
     using UnityEngine;
     using UnityEngine.Events;
     using System.Collections.Generic;
+    using VRTK.Core.Rule;
+    using VRTK.Core.Utility;
 
     /// <summary>
     /// The basis for all action types.
@@ -33,8 +35,9 @@
     /// </summary>
     /// <typeparam name="TSelf">This type itself.</typeparam>
     /// <typeparam name="TValue">The variable type the action will be utilizing.</typeparam>
+    /// <typeparam name="TWrappedEvent">The <see cref="WrappedUnityEvent"/> type the action will be utilizing.</typeparam>
     /// <typeparam name="TEvent">The <see cref="UnityEvent"/> type the action will be utilizing.</typeparam>
-    public abstract class BaseAction<TSelf, TValue, TEvent> : BaseAction where TSelf : BaseAction<TSelf, TValue, TEvent> where TEvent : UnityEvent<TValue>, new()
+    public abstract class BaseAction<TSelf, TValue, TWrappedEvent, TEvent> : BaseAction where TSelf : BaseAction<TSelf, TValue, TWrappedEvent, TEvent> where TWrappedEvent : WrappedUnityEvent<TValue, TEvent>, new() where TEvent : UnityEvent<TValue>, new()
     {
         /// <summary>
         /// The value of the action.
@@ -57,18 +60,20 @@
         [Tooltip("Actions to subscribe to when this action is enabled. Allows chaining the source actions to this action.")]
         public List<TSelf> sources = new List<TSelf>();
 
+        public RuleContainer outgoingEventFilter;
+
         /// <summary>
         /// Emitted when the action becomes active.
         /// </summary>
-        public TEvent Activated = new TEvent();
+        public TWrappedEvent Activated = new TWrappedEvent();
         /// <summary>
         /// Emitted when the <see cref="Value"/> of the action changes.
         /// </summary>
-        public TEvent ValueChanged = new TEvent();
+        public TWrappedEvent ValueChanged = new TWrappedEvent();
         /// <summary>
         /// Emitted when the action becomes deactivated.
         /// </summary>
-        public TEvent Deactivated = new TEvent();
+        public TWrappedEvent Deactivated = new TWrappedEvent();
 
         /// <summary>
         /// Acts on the value.
@@ -111,7 +116,7 @@
             }
             else
             {
-                ValueChanged?.Invoke(Value);
+                ValueChanged?.Invoke(Value, outgoingEventFilter?.Interface);
             }
         }
 
@@ -123,9 +128,9 @@
             sources.ForEach(
                 source =>
                 {
-                    source.Activated.AddListener(Receive);
-                    source.ValueChanged.AddListener(Receive);
-                    source.Deactivated.AddListener(Receive);
+                    source.Activated.AddListener(this, Receive);
+                    source.ValueChanged.AddListener(this, Receive);
+                    source.Deactivated.AddListener(this, Receive);
                 });
         }
 
@@ -170,13 +175,13 @@
         {
             if (IsActivated)
             {
-                Activated?.Invoke(Value);
-                ValueChanged?.Invoke(Value);
+                Activated?.Invoke(Value, outgoingEventFilter?.Interface);
+                ValueChanged?.Invoke(Value, outgoingEventFilter?.Interface);
             }
             else
             {
-                ValueChanged?.Invoke(Value);
-                Deactivated?.Invoke(Value);
+                ValueChanged?.Invoke(Value, outgoingEventFilter?.Interface);
+                Deactivated?.Invoke(Value, outgoingEventFilter?.Interface);
             }
         }
     }

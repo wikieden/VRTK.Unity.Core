@@ -4,17 +4,26 @@
     using UnityEngine.Events;
     using System;
     using VRTK.Core.Extension;
+    using VRTK.Core.Utility;
 
     /// <summary>
     /// Emits a <see cref="Vector2"/> value.
     /// </summary>
-    public class Vector2Action : BaseAction<Vector2Action, Vector2, Vector2Action.UnityEvent>
+    public class Vector2Action : BaseAction<Vector2Action, Vector2, Vector2Action.WrappedEvent, Vector2Action.Event>
     {
+        /// <summary>
+        /// Defines the wrapped event with the <see cref="Vector2"/> state.
+        /// </summary>
+        [Serializable]
+        public class WrappedEvent : WrappedUnityEvent<Vector2, Event>
+        {
+        }
+
         /// <summary>
         /// Defines the event with the <see cref="Vector2"/> state.
         /// </summary>
         [Serializable]
-        public class UnityEvent : UnityEvent<Vector2>
+        public class Event : UnityEvent<Vector2>
         {
         }
 

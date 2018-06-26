@@ -1,8 +1,8 @@
 ﻿namespace VRTK.Core.Action
 {
     using UnityEngine;
-    using System.Linq;
     using System.Collections.Generic;
+    using System.Linq;
     using VRTK.Core.Extension;
 
     /// <summary>
@@ -15,6 +15,17 @@
         /// </summary>
         [Tooltip("BaseActions to check the active state on.")]
         public List<BaseAction> actions = new List<BaseAction>();
+
+        private void Awake()
+        {
+            Activated.AddListener(
+                this,
+                arg0 =>
+                {
+                });
+
+            //Debug.Log(string.Join("\n", Activated.ListenersWithTargets.Select(pair => pair.target)));
+        }
 
         protected virtual void Update()
         {

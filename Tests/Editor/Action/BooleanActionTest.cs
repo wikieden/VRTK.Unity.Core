@@ -32,9 +32,9 @@ namespace Test.VRTK.Core.Action
             UnityEventListenerMock deactivatedListenerMock = new UnityEventListenerMock();
             UnityEventListenerMock changedListenerMock = new UnityEventListenerMock();
 
-            subject.Activated.AddListener(activatedListenerMock.Listen);
-            subject.Deactivated.AddListener(deactivatedListenerMock.Listen);
-            subject.ValueChanged.AddListener(changedListenerMock.Listen);
+            subject.Activated.AddListener(this, activatedListenerMock.Listen);
+            subject.Deactivated.AddListener(this, deactivatedListenerMock.Listen);
+            subject.ValueChanged.AddListener(this, changedListenerMock.Listen);
 
             Assert.IsFalse(activatedListenerMock.Received);
             Assert.IsFalse(deactivatedListenerMock.Received);
@@ -57,9 +57,9 @@ namespace Test.VRTK.Core.Action
             UnityEventListenerMock deactivatedListenerMock = new UnityEventListenerMock();
             UnityEventListenerMock changedListenerMock = new UnityEventListenerMock();
 
-            subject.Activated.AddListener(activatedListenerMock.Listen);
-            subject.Deactivated.AddListener(deactivatedListenerMock.Listen);
-            subject.ValueChanged.AddListener(changedListenerMock.Listen);
+            subject.Activated.AddListener(this, activatedListenerMock.Listen);
+            subject.Deactivated.AddListener(this, deactivatedListenerMock.Listen);
+            subject.ValueChanged.AddListener(this, changedListenerMock.Listen);
 
             Assert.IsFalse(activatedListenerMock.Received);
             Assert.IsFalse(deactivatedListenerMock.Received);
@@ -77,7 +77,7 @@ namespace Test.VRTK.Core.Action
         {
             UnityEventListenerMock changedListenerMock = new UnityEventListenerMock();
 
-            subject.ValueChanged.AddListener(changedListenerMock.Listen);
+            subject.ValueChanged.AddListener(this, changedListenerMock.Listen);
 
             Assert.IsFalse(changedListenerMock.Received);
 
@@ -104,9 +104,9 @@ namespace Test.VRTK.Core.Action
             UnityEventListenerMock deactivatedListenerMock = new UnityEventListenerMock();
             UnityEventListenerMock changedListenerMock = new UnityEventListenerMock();
 
-            subject.Activated.AddListener(activatedListenerMock.Listen);
-            subject.Deactivated.AddListener(deactivatedListenerMock.Listen);
-            subject.ValueChanged.AddListener(changedListenerMock.Listen);
+            subject.Activated.AddListener(this, activatedListenerMock.Listen);
+            subject.Deactivated.AddListener(this, deactivatedListenerMock.Listen);
+            subject.ValueChanged.AddListener(this, changedListenerMock.Listen);
             subject.gameObject.SetActive(false);
             subject.Receive(true);
 
@@ -132,9 +132,9 @@ namespace Test.VRTK.Core.Action
             UnityEventListenerMock deactivatedListenerMock = new UnityEventListenerMock();
             UnityEventListenerMock changedListenerMock = new UnityEventListenerMock();
 
-            subject.Activated.AddListener(activatedListenerMock.Listen);
-            subject.Deactivated.AddListener(deactivatedListenerMock.Listen);
-            subject.ValueChanged.AddListener(changedListenerMock.Listen);
+            subject.Activated.AddListener(this, activatedListenerMock.Listen);
+            subject.Deactivated.AddListener(this, deactivatedListenerMock.Listen);
+            subject.ValueChanged.AddListener(this, changedListenerMock.Listen);
             subject.enabled = false;
             subject.Receive(true);
 

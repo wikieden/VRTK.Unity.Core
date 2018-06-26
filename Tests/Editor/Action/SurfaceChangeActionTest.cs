@@ -30,7 +30,7 @@ namespace Test.VRTK.Core.Action
         public void SurfaceChanged()
         {
             UnityEventListenerMock activatedListenerMock = new UnityEventListenerMock();
-            subject.Activated.AddListener(activatedListenerMock.Listen);
+            subject.Activated.AddListener(this, activatedListenerMock.Listen);
             subject.changeDistance = 1f;
             subject.checkAxis = Vector3State.True;
 
@@ -60,7 +60,7 @@ namespace Test.VRTK.Core.Action
         public void SurfaceUnchanged()
         {
             UnityEventListenerMock activatedListenerMock = new UnityEventListenerMock();
-            subject.Activated.AddListener(activatedListenerMock.Listen);
+            subject.Activated.AddListener(this, activatedListenerMock.Listen);
             subject.changeDistance = 1f;
             subject.checkAxis = new Vector3State(false, true, false);
 
