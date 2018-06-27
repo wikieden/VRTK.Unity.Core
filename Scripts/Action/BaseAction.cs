@@ -3,6 +3,7 @@
     using UnityEngine;
     using UnityEngine.Events;
     using System.Collections.Generic;
+    using System.Linq;
     using VRTK.Core.Rule;
     using VRTK.Core.Utility;
 
@@ -60,7 +61,8 @@
         [Tooltip("Actions to subscribe to when this action is enabled. Allows chaining the source actions to this action.")]
         public List<TSelf> sources = new List<TSelf>();
 
-        public RuleContainer outgoingEventFilter;
+        protected readonly List<TSelf> targetActions = new List<TSelf>();
+        public RuleContainer outgoingActionFilter;
 
         /// <summary>
         /// Emitted when the action becomes active.
@@ -106,18 +108,25 @@
         /// <param name="value">The new value.</param>
         protected virtual void ProcessValue(TValue value)
         {
+            IEnumerable<TSelf> validTargetActions = outgoingActionFilter?.Interface == null
+                ? targetActions
+                : targetActions.Where(target => outgoingActionFilter.Interface.Accepts(target));
+            foreach (TSelf validTarget in validTargetActions)
+            {
+                validTarget.ProcessValue(value);
+            }
+
             Value = value;
 
             bool shouldActivate = ShouldActivate(value);
-            if (IsActivated != shouldActivate)
+            if (IsActivated == shouldActivate)
             {
-                IsActivated = shouldActivate;
-                EmitActivationState();
+                ValueChanged?.Invoke(Value);
+                return;
             }
-            else
-            {
-                ValueChanged?.Invoke(Value, outgoingEventFilter?.Interface);
-            }
+
+            IsActivated = shouldActivate;
+            EmitActivationState();
         }
 
         /// <summary>
@@ -125,13 +134,7 @@
         /// </summary>
         protected virtual void SubscribeToSources()
         {
-            sources.ForEach(
-                source =>
-                {
-                    source.Activated.AddListener(this, Receive);
-                    source.ValueChanged.AddListener(this, Receive);
-                    source.Deactivated.AddListener(this, Receive);
-                });
+            sources.ForEach(source => source.targetActions.Add((TSelf)this));
         }
 
         /// <summary>
@@ -139,13 +142,7 @@
         /// </summary>
         protected virtual void UnsubscribeFromSources()
         {
-            sources.ForEach(
-                source =>
-                {
-                    source.Activated.RemoveListener(Receive);
-                    source.ValueChanged.RemoveListener(Receive);
-                    source.Deactivated.RemoveListener(Receive);
-                });
+            sources.ForEach(source => source.targetActions.Remove((TSelf)this));
         }
 
         /// <summary>
@@ -175,13 +172,13 @@
         {
             if (IsActivated)
             {
-                Activated?.Invoke(Value, outgoingEventFilter?.Interface);
-                ValueChanged?.Invoke(Value, outgoingEventFilter?.Interface);
+                Activated?.Invoke(Value);
+                ValueChanged?.Invoke(Value);
             }
             else
             {
-                ValueChanged?.Invoke(Value, outgoingEventFilter?.Interface);
-                Deactivated?.Invoke(Value, outgoingEventFilter?.Interface);
+                ValueChanged?.Invoke(Value);
+                Deactivated?.Invoke(Value);
             }
         }
     }

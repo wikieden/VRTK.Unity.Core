@@ -7,7 +7,7 @@
     {
         public List<Object> list = new List<Object>();
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public bool Accepts(object target)
         {
             Object targetObject = target as Object;

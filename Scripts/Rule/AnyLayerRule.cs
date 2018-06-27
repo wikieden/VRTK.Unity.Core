@@ -2,15 +2,14 @@
 {
     using UnityEngine;
 
-    public class AnyLayerRule : MonoBehaviour, IRule
+    public class AnyLayerRule : BaseGameObjectRule
     {
         public LayerMask layerMask;
 
         /// <inheritdoc />
-        public bool Accepts(object target)
+        protected override bool Accepts(GameObject targetGameObject)
         {
-            GameObject targetObject = target as GameObject;
-            return targetObject != null && (targetObject.layer & layerMask.value) != 0;
+            return (targetGameObject.layer & layerMask.value) != 0;
         }
     }
 }
